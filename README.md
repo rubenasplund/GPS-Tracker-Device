@@ -26,3 +26,6 @@ A GPS tracker device which tracks position and movement patterns on animlas or t
 ## TMP36FSZ
 * Voltage range (100mV - 1750 mV)
 * Temperature range -40 - 125 degrees
+
+## Useful links
+* https://github.com/mcci-catena/HW-Designs/blob/master/Boards/Catena-4610/234001131b_(Catena-4610-Schematic).pdf
