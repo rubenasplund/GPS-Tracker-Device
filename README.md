@@ -15,6 +15,7 @@ A GPS tracker device which tracks position and movement patterns on animlas or t
 * Power switch - https://www.elfa.se/en/low-power-slide-switch-1co-on-on-pcb-smd-rnd-components-rnd-210-00603/p/30152627?q=power+switch&pos=3&origPos=1&origPageSize=10&track=true
 * Regulator lm1117 ADJ
 * Current limiter - RT9742EGJ5 - https://www.digikey.se/product-detail/en/richtek-usa-inc/RT9742EGJ5/1028-1432-2-ND/5880515
+* Diode (prevents currents going wrong way) - https://www.elfa.se/en/schottky-diode-1a-40v-do-214ac-sma-vishay-ss14-e3-61t/p/30048133
 
 ## Also needed for project
 * Anti aliasing filters for sampling.
