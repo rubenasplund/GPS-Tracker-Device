@@ -16,6 +16,8 @@ A GPS tracker device which tracks position and movement patterns on animlas or t
 * Regulator lm1117 ADJ
 * Current limiter - RT9742EGJ5 - https://www.digikey.se/product-detail/en/richtek-usa-inc/RT9742EGJ5/1028-1432-2-ND/5880515
 * Diode (prevents currents going wrong way) - https://www.elfa.se/en/schottky-diode-1a-40v-do-214ac-sma-vishay-ss14-e3-61t/p/30048133
+* Coax connector - https://www.elfa.se/en/micro-coaxial-straight-socket-micro-coaxial-connector-50ohm-6ghz-molex-73412-0110/p/30076410?queryFromSuggest=true
+* Antenna - ??
 
 ## Also needed for project
 * Anti aliasing filters for sampling.
