@@ -5,7 +5,7 @@ A GPS tracker device which tracks position and movement patterns on animlas or t
 
 ## Components
 * GPS module - Adafruit 746 - https://www.elfa.se/en/mtk3339-gps-breakout-adafruit-746/p/30091220?q=GPS&pos=2&origPos=5&origPageSize=10&track=true
-* USB connector - https://www.elfa.se/en/micro-usb-with-solder-tabs-micro-usb-socket-right-angle-poles-molex-105017-0001/p/30161483?q=micro+usb-b+molex&pos=8&origPos=8&origPageSize=10&track=true
+* USB connector - https://www.elfa.se/en/socket-micro-usb-smd-wuerth-elektronik-629105150521/p/30009163?q=usb+wurth+629105150521&pos=1&origPos=1&origPageSize=10&track=true
 * A display - SSD1306 SPI
 * Temperature sensor - TMP36FSZ - https://www.elfa.se/en/temperature-sensor-ic-40-125-soic-analog-devices-tmp36fsz/p/30167232?queryFromSuggest=true
 * LED SMD 0805 - https://www.elfa.se/en/smd-led-640nm-0805-150mcd-20ma-kingbright-kp-2012surc/p/17531013?queryFromSuggest=true
