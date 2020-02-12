@@ -19,6 +19,8 @@ A GPS tracker device which tracks position and movement patterns on animlas or t
 * Diode (prevents currents going wrong way) - https://www.elfa.se/en/schottky-diode-1a-40v-do-214ac-sma-vishay-ss14-e3-61t/p/30048133
 * Coax connector - https://www.elfa.se/en/micro-coaxial-straight-socket-micro-coaxial-connector-50ohm-6ghz-molex-73412-0110/p/30076410?queryFromSuggest=true
 * Antenna - ??
+* Pin connectors to display and the GPS module
+* Pin connector to the battery
 
 ## Also needed for project
 * Anti aliasing filters for sampling.
