@@ -20,7 +20,7 @@ A GPS tracker device which tracks position and movement patterns on animlas or t
 * Coax connector - https://www.elfa.se/en/micro-coaxial-straight-socket-micro-coaxial-connector-50ohm-6ghz-molex-73412-0110/p/30076410?queryFromSuggest=true
 * Antenna - https://www.elfa.se/en/aerial-globalsat-at-65-sma/p/17840051?q=*&pos=1&origPos=24&origPageSize=10&track=true
 * Antenna adapter - https://www.elfa.se/en/fl-cable-150-mm-black-stig-wahlstroem-elektronik-k129121014/p/14645631?q=sma+to+uFL%2fu.FL%2fIPX%2fIPEX&pos=1&origPos=1&origPageSize=10&track=true
-* Pin connectors to display and the GPS module
+* Pin connectors to display and the GPS module - https://www.elfa.se/en/straight-male-pcb-header-through-hole-rows-10-contacts-54mm-pitch-rnd-connect-rnd-205-00631/p/30093651?q=&pos=1&origPos=1&origPageSize=10&track=true
 * Pin connector to the battery
 
 ## Also needed for project
