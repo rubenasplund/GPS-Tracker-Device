@@ -7,7 +7,7 @@ A GPS tracker device which tracks position and movement patterns on animlas or t
 * GPS module - Adafruit 746 - https://www.elfa.se/en/mtk3339-gps-breakout-adafruit-746/p/30091220?q=GPS&pos=2&origPos=5&origPageSize=10&track=true
 * Micro USB connector - https://www.elfa.se/en/micro-usb-with-solder-tabs-micro-usb-socket-right-angle-poles-molex-105017-0001/p/30161483?queryFromSuggest=true
 * A display - SSD1306 SPI - https://cdon.se/hem-tradgard/oled-display-0-96-tum-vit-128x64-pixlar-ssd1306-spi-p50506639
-* Temperature sensor - TMP36FSZ - https://www.elfa.se/en/temperature-sensor-ic-40-125-soic-analog-devices-tmp36fsz/p/30167232?queryFromSuggest=true
+* Temperature sensor - TMP36FSZ - https://se.rs-online.com/web/p/temperature-sensors-humidity-sensors/0412973/
 * LED SMD 0805 - https://www.elfa.se/en/smd-led-640nm-0805-150mcd-20ma-kingbright-kp-2012surc/p/17531013?queryFromSuggest=true
 * ADC - Integrated in MCU
 * Battery (chargable) -ICP501022UPM - https://www.elfa.se/sv/litiumjonpolymerbatteripack-340mah-7v-renata-icp422339pr/p/30158712?q=&pos=1&origPos=1&origPageSize=10&track=true
@@ -18,8 +18,6 @@ A GPS tracker device which tracks position and movement patterns on animlas or t
 * Current limiter - RT9742EGJ5 - https://www.digikey.se/product-detail/en/richtek-usa-inc/RT9742EGJ5/1028-1432-2-ND/5880515
 * Diode (prevents currents going wrong way) - https://www.elfa.se/en/schottky-diode-1a-40v-do-214ac-sma-vishay-ss14-e3-61t/p/30048133
 * Coax connector - https://www.elfa.se/en/micro-coaxial-straight-socket-micro-coaxial-connector-50ohm-6ghz-molex-73412-0110/p/30076410?queryFromSuggest=true
-* Antenna - https://www.elfa.se/en/aerial-globalsat-at-65-sma/p/17840051?q=*&pos=1&origPos=24&origPageSize=10&track=true
-* Antenna adapter - https://www.elfa.se/en/fl-cable-150-mm-black-stig-wahlstroem-elektronik-k129121014/p/14645631?q=sma+to+uFL%2fu.FL%2fIPX%2fIPEX&pos=1&origPos=1&origPageSize=10&track=true
 * Pin connectors to display and the GPS module - https://www.elfa.se/en/straight-male-pcb-header-through-hole-rows-10-contacts-54mm-pitch-rnd-connect-rnd-205-00631/p/30093651?q=&pos=1&origPos=1&origPageSize=10&track=true
 * Pin connector to the battery - https://www.elfa.se/sv/kk-254-rak-hane-kretskortslist-genomgaende-hal-rader-kontakter-54mm-stiftavstand-molex-22-29-2021/p/30048774
 
