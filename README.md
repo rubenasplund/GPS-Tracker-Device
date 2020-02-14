@@ -20,6 +20,7 @@ A GPS tracker device which tracks position and movement patterns on animlas or t
 * Coax connector - https://www.elfa.se/en/micro-coaxial-straight-socket-micro-coaxial-connector-50ohm-6ghz-molex-73412-0110/p/30076410?queryFromSuggest=true
 * Pin connectors to display and the GPS module - https://www.elfa.se/en/straight-male-pcb-header-through-hole-rows-10-contacts-54mm-pitch-rnd-connect-rnd-205-00631/p/30093651?q=&pos=1&origPos=1&origPageSize=10&track=true
 * Pin connector to the battery - https://www.elfa.se/sv/kk-254-rak-hane-kretskortslist-genomgaende-hal-rader-kontakter-54mm-stiftavstand-molex-22-29-2021/p/30048774
+* Pin female connector - https://www.elfa.se/en/straight-female-pcb-receptacle-through-hole-rows-10-contacts-54mm-pitch-rnd-connect-rnd-205-00650/p/30093670?queryFromSuggest=true
 
 ## Also needed for project
 * Anti aliasing filters for sampling.
