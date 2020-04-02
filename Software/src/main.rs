@@ -5,27 +5,20 @@
 extern crate panic_semihosting;
 
 use hal::{
-    exti::TriggerEdge,
     gpio::*,
     pac,
     prelude::*,
     rcc::Config,
-    spi,
+    // spi,
     syscfg,
-    delay::Delay,
-    time::U32Ext, 
     serial::{Config as serialConfig, Rx, Serial, Tx},
     stm32::{USART1},
-    stm32::usart1,
+    timer,
 };
 
 use nb::block;
-use cortex_m_semihosting::hprintln;
-use cortex_m::peripheral::DWT;
-
+use cortex_m::peripheral::syst::SystClkSource;
 use stm32l0xx_hal as hal;
-//use communicator::{Message, Channel};
-use heapless::consts::*;
 
 #[rtfm::app(device = stm32l0xx_hal::pac, monotonic = rtfm::cyccnt::CYCCNT, peripherals = true)]
 const APP: () = {
@@ -34,6 +27,8 @@ const APP: () = {
         TX: Tx<USART1>,
         RX: Rx<USART1>,
         LED: gpioa::PA0<Output<PushPull>>,
+        #[init(false)]
+        STATE: bool,
 
     }
 
@@ -52,12 +47,23 @@ const APP: () = {
 
         let exti = cx.device.EXTI;
 
+        // Configure tx and rx
         let mut tx = gpioa.pa9.into_push_pull_output();
         let mut rx = gpioa.pa10.into_pull_up_input();
 
         // Configure led
         let mut led = gpioa.pa0.into_push_pull_output();
         led.set_low().ok();
+
+
+        let mut syst = cx.core.SYST;
+
+        // configures the system timer to trigger a SysTick exception 
+        syst.set_clock_source(SystClkSource::Core);
+        // syst.set_reload(16_000_000); // period = 1s
+        syst.set_reload(1_000_000); // period = 1/16 s
+        syst.enable_counter();
+        syst.enable_interrupt();
 
         // let mut core = cx.core;
         // let device = cx.device;
@@ -106,20 +112,16 @@ const APP: () = {
     }
     
     // idle may be interrupted by other interrupts/tasks in the system
-    #[idle(resources = [RX, TX, LED])]
+    #[idle(resources = [RX, TX])]
     fn idle(cx: idle::Context) -> ! {
-        let led = cx.resources.LED;
         let rx = cx.resources.RX;
         let tx = cx.resources.TX;
-
-
-        led.set_high().ok();
 
         loop {
         
             match block!(rx.read()) {
                 Ok(byte) => {
-                    //tx.write(byte).unwrap();
+                    tx.write(byte).unwrap();
                 }
                 Err(err) => {
 
@@ -130,99 +132,23 @@ const APP: () = {
         }
     }
 
-    // #[task(resources = [LED])]
-    // fn blinkinLed() {
-    //      let led = cx.resources.LED;
-    // }
+    // led on/off
+    #[task(binds = SysTick, priority = 5, resources = [LED, STATE])]
+    fn led_pwn(cx: led_pwn::Context) {
+        let led = cx.resources.LED;
+        if *cx.resources.STATE {
+            led.set_high().ok();
+        } else {
+            led.set_low().ok();
+        }
+        *cx.resources.STATE = !*cx.resources.STATE;
+    }
 
     // Interrupt handlers used to dispatch software tasks
     extern "C" {
         fn USART4_USART5();
     }
 };
-
-    // #[init(resources = [BUFFER])]
-    // fn init() -> init::LateResources {
-    //     // Configure the clock.
-    //     let mut rcc = device.RCC.freeze(Config::hsi16());
-    //     let mut syscfg = syscfg::SYSCFG::new(device.SYSCFG, &mut rcc);
-
-    //     // Acquire the GPIOB peripheral. This also enables the clock for GPIOB in
-    //     // the RCC register.
-    //     let gpioa = device.GPIOA.split(&mut rcc);
-    //     let gpiob = device.GPIOB.split(&mut rcc);
-    //     let gpioc = device.GPIOC.split(&mut rcc);
-
-    //     let exti = device.EXTI;
-
-    //     // Configure PB4 as input.
-    //     let sx1276_dio0 = gpiob.pb4.into_pull_up_input();
-    //     // Configure the external interrupt on the falling edge for the pin 2.
-    //     exti.listen(
-    //         &mut syscfg,
-    //         sx1276_dio0.port(),
-    //         sx1276_dio0.pin_number(),
-    //         TriggerEdge::Rising,
-    //     );
-
-    //     let sck = gpiob.pb3;
-    //     let miso = gpioa.pa6;
-    //     let mosi = gpioa.pa7;
-    //     let nss = gpioa.pa15.into_push_pull_output();
-    //     longfi_bindings::set_spi_nss(nss);
-
-    //     // Initialise the SPI peripheral.
-    //     let mut _spi = device
-    //         .SPI1
-    //         .spi((sck, miso, mosi), spi::MODE_0, 1_000_000.hz(), &mut rcc);
-
-    //     let reset = gpioc.pc0.into_push_pull_output();
-    //     longfi_bindings::set_radio_reset(reset);
-
-    //     let ant_sw = AntennaSwitches::new(
-    //         gpioa.pa1.into_push_pull_output(),
-    //         gpioc.pc2.into_push_pull_output(),
-    //         gpioc.pc1.into_push_pull_output(),
-    //     );
-
-    //     longfi_bindings::set_antenna_switch(ant_sw);
-
-    //     let en_tcxo = gpioa.pa8.into_push_pull_output();
-    //     longfi_bindings::set_tcxo_pins(en_tcxo);
-
-    //     static mut BINDINGS: longfi_device::BoardBindings = longfi_device::BoardBindings {
-    //         reset: Some(longfi_bindings::radio_reset),
-    //         spi_in_out: Some(longfi_bindings::spi_in_out),
-    //         spi_nss: Some(longfi_bindings::spi_nss),
-    //         delay_ms: Some(longfi_bindings::delay_ms),
-    //         get_random_bits: Some(longfi_bindings::get_random_bits),
-    //         set_antenna_pins: Some(longfi_bindings::set_antenna_pins),
-    //         set_board_tcxo: Some(longfi_bindings::set_tcxo),
-    //     };
-
-    //     let rf_config = RfConfig {
-    //         oui: 0xBEEF_FEED,
-    //         device_id: 0xABCD,
-    //     };
-
-    //     let mut longfi_radio = unsafe { LongFi::new(&mut BINDINGS, rf_config).unwrap() };
-
-    //     longfi_radio.set_buffer(resources.BUFFER);
-
-    //     longfi_radio.receive();
-
-    //     // Configure PB5 as output.
-    //     let mut led = gpiob.pb2.into_push_pull_output();
-    //     led.set_low().ok();
-
-    //     // Return the initialised resources.
-    //     init::LateResources {
-    //         INT: exti,
-    //         SX1276_DIO0: sx1276_dio0,
-    //         LONGFI: longfi_radio,
-    //         LED: led,
-    //     }
-    // }
 
     // #[task(capacity = 4, priority = 2, resources = [BUFFER, LONGFI, LED, STATE, COUNTER_1, COUNTER_2])]
     // fn radio_event(event: RfEvent) {
