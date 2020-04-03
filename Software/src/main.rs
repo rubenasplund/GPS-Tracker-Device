@@ -9,16 +9,18 @@ use hal::{
     pac,
     prelude::*,
     rcc::Config,
-    // spi,
+    spi,
     syscfg,
     serial::{Config as serialConfig, Rx, Serial, Tx},
     stm32::{USART1},
     timer,
+    adc,
 };
 
 use nb::block;
 use cortex_m::peripheral::syst::SystClkSource;
 use stm32l0xx_hal as hal;
+use cortex_m_semihosting::hprintln;
 
 #[rtfm::app(device = stm32l0xx_hal::pac, monotonic = rtfm::cyccnt::CYCCNT, peripherals = true)]
 const APP: () = {
@@ -27,8 +29,12 @@ const APP: () = {
         TX: Tx<USART1>,
         RX: Rx<USART1>,
         LED: gpioa::PA0<Output<PushPull>>,
+        ADC: adc::Adc,
+        POT: gpioa::PA2<Analog>,
         #[init(false)]
-        STATE: bool,
+        LED_STATE: bool,
+        #[init(false)]
+        LED_LOCK: bool,
 
     }
 
@@ -89,18 +95,22 @@ const APP: () = {
         // Separate out the sender and receiver of the serial port
         let (tx, rx) = serial.split();
 
-        // let sck = gpiob.pb3;
-        // let miso = gpioa.pa6;
-        // let mosi = gpioa.pa7;
-        // //let nss = gpioa.pa15.into_push_pull_output();
+        let adc = cx.device.ADC.constrain(&mut rcc);
+        let pot = gpioa.pa2.into_analog();
+
+        // let sck = gpiob.pb13;
+        // let miso = gpiob.pb14;
+        // let mosi = gpiob.pb15;
+        // let nss = gpiob.pb12.into_push_pull_output();
+        // let dc = gpiob.pb9.into_push_pull_output();
         // //longfi_bindings::set_spi_nss(nss);
 
         // // Initialise the SPI peripheral.
         // let mut _spi = cx.device
-        //     .SPI1
+        //     .SPI2
         //     .spi((sck, miso, mosi), spi::MODE_0, 1_000_000.hz(), &mut rcc);
 
-        // let reset = gpioc.pc0.into_push_pull_output();
+        // let reset = gpiob.pb8.into_push_pull_output();
     
         // Late resources
         init::LateResources {
@@ -108,6 +118,8 @@ const APP: () = {
             TX: tx,
             RX: rx,
             LED: led,
+            ADC: adc,
+            POT: pot,
         }
     }
     
@@ -121,27 +133,42 @@ const APP: () = {
         
             match block!(rx.read()) {
                 Ok(byte) => {
-                    tx.write(byte).unwrap();
+                    hprintln!("Ok {:?}", byte).unwrap();
+                    // tx.write(byte).unwrap();
                 }
+
                 Err(err) => {
 
                 }
-
             }
+ 
             
         }
     }
 
-    // led on/off
-    #[task(binds = SysTick, priority = 5, resources = [LED, STATE])]
-    fn led_pwn(cx: led_pwn::Context) {
+    // led is flashing until, when 3.3V signal is going through the adc PA2 then it stops flashing
+    #[task(binds = SysTick, priority = 3, resources = [LED, LED_STATE, LED_LOCK, ADC, POT])]
+    fn led_pwn_toggle(cx: led_pwn_toggle::Context) {
         let led = cx.resources.LED;
-        if *cx.resources.STATE {
+        let mut adc = cx.resources.ADC;
+        let mut pot = cx.resources.POT;
+        let mut val: u16 = 0;
+
+        if *cx.resources.LED_STATE && !*cx.resources.LED_LOCK {
             led.set_high().ok();
         } else {
             led.set_low().ok();
         }
-        *cx.resources.STATE = !*cx.resources.STATE;
+        *cx.resources.LED_STATE = !*cx.resources.LED_STATE;
+
+        val = adc.read(pot).unwrap();
+        // hprintln!("Ok {:?}", val).unwrap();
+
+        if val >= 350 {
+            *cx.resources.LED_LOCK = false;
+        } else {
+            *cx.resources.LED_LOCK = true;
+        }
     }
 
     // Interrupt handlers used to dispatch software tasks
@@ -149,46 +176,3 @@ const APP: () = {
         fn USART4_USART5();
     }
 };
-
-    // #[task(capacity = 4, priority = 2, resources = [BUFFER, LONGFI, LED, STATE, COUNTER_1, COUNTER_2])]
-    // fn radio_event(event: RfEvent) {
-    //     let longfi_radio = resources.LONGFI;
-    //     let client_event = longfi_radio.handle_event(event);
-    //     match client_event {
-    //         ClientEvent::ClientEvent_TxDone => {
-    //             longfi_radio.receive();
-    //         }
-    //         ClientEvent::ClientEvent_Rx => {
-    //             let rx_packet = longfi_radio.get_rx();
-
-    //             {
-    //                 let buf = unsafe {
-    //                     core::slice::from_raw_parts(rx_packet.buf, rx_packet.len as usize)
-    //                 };
-    //                 let message = Message::deserialize(buf);
-
-    //                 if let Some(message) = message {
-    //                     // Let's assume we only have permission to use ID 2:
-    //                     if message.id != 2 {
-    //                         longfi_radio.set_buffer(resources.BUFFER);
-    //                         longfi_radio.receive();
-    //                         return;
-    //                     }
-
-    //                     let binary = application(
-    //                         message,
-    //                         resources.COUNTER_1,
-    //                         resources.COUNTER_2,
-    //                         resources.STATE,
-    //                         resources.LED
-    //                     );
-    //                     longfi_radio.send(&binary);
-    //                 }
-    //             }
-
-    //             longfi_radio.set_buffer(resources.BUFFER);
-    //             longfi_radio.receive();
-    //         }
-    //         ClientEvent::ClientEvent_None => {}
-    //     }
-    // }
