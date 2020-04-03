@@ -10,14 +10,18 @@ The purpose for this project is to make a GPS tracker device which tracks positi
 
 ## Dependencies
 - Install rust [https://rustup.rs/](https://rustup.rs/)
+
 - Rust 1.40, or later
-`rustup update`
-`rustup target add thumbv7em-none-eabihf`
+
+- `rustup update`
+
+- `rustup target add thumbv7em-none-eabihf`
 
 ## Debug and Run
 
-`openocd -f openocd.cfg`
-`cargo run`
+- `openocd -f openocd.cfg`
+
+- `cargo run`
 
 ## Components
 
@@ -75,6 +79,6 @@ The purpose for this project is to make a GPS tracker device which tracks positi
 
   
 
-## Useful links
+## References
 
 * https://github.com/mcci-catena/HW-Designs/blob/master/Boards/Catena-4610/234001131b_(Catena-4610-Schematic).pdf
