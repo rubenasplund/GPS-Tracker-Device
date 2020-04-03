@@ -15,6 +15,7 @@ use hal::{
     stm32::{USART1},
     timer,
     adc,
+    exti::TriggerEdge,
 };
 
 use nb::block;
@@ -30,7 +31,8 @@ const APP: () = {
         RX: Rx<USART1>,
         LED: gpioa::PA0<Output<PushPull>>,
         ADC: adc::Adc,
-        POT: gpioa::PA2<Analog>,
+        SIG: gpioa::PA2<Analog>,
+        Button: gpiob::PB6<Input<PullUp>>,
         #[init(false)]
         LED_STATE: bool,
         #[init(false)]
@@ -61,15 +63,24 @@ const APP: () = {
         let mut led = gpioa.pa0.into_push_pull_output();
         led.set_low().ok();
 
+        // Configure button
+        let mut button = gpiob.pb6.into_pull_up_input(); 
 
         let mut syst = cx.core.SYST;
-
         // configures the system timer to trigger a SysTick exception 
         syst.set_clock_source(SystClkSource::Core);
         // syst.set_reload(16_000_000); // period = 1s
         syst.set_reload(1_000_000); // period = 1/16 s
         syst.enable_counter();
         syst.enable_interrupt();
+
+
+        exti.listen(
+            &mut syscfg,
+            button.port(),
+            button.pin_number(),
+            TriggerEdge::Rising,
+        );
 
         // let mut core = cx.core;
         // let device = cx.device;
@@ -96,7 +107,7 @@ const APP: () = {
         let (tx, rx) = serial.split();
 
         let adc = cx.device.ADC.constrain(&mut rcc);
-        let pot = gpioa.pa2.into_analog();
+        let sig = gpioa.pa2.into_analog();
 
         // let sck = gpiob.pb13;
         // let miso = gpiob.pb14;
@@ -119,7 +130,8 @@ const APP: () = {
             RX: rx,
             LED: led,
             ADC: adc,
-            POT: pot,
+            SIG: sig,
+            Button: button,
         }
     }
     
@@ -133,25 +145,23 @@ const APP: () = {
         
             match block!(rx.read()) {
                 Ok(byte) => {
-                    hprintln!("Ok {:?}", byte).unwrap();
+                    // hprintln!("Ok {:?}", byte).unwrap();
                     // tx.write(byte).unwrap();
                 }
-
+                
                 Err(err) => {
 
                 }
             }
- 
-            
         }
     }
 
     // led is flashing until, when 3.3V signal is going through the adc PA2 then it stops flashing
-    #[task(binds = SysTick, priority = 3, resources = [LED, LED_STATE, LED_LOCK, ADC, POT])]
+    #[task(binds = SysTick, priority = 3, resources = [LED, LED_STATE, LED_LOCK, ADC, SIG])]
     fn led_pwn_toggle(cx: led_pwn_toggle::Context) {
-        let led = cx.resources.LED;
+        let mut led = cx.resources.LED;
         let mut adc = cx.resources.ADC;
-        let mut pot = cx.resources.POT;
+        let mut sig = cx.resources.SIG;
         let mut val: u16 = 0;
 
         if *cx.resources.LED_STATE && !*cx.resources.LED_LOCK {
@@ -161,14 +171,26 @@ const APP: () = {
         }
         *cx.resources.LED_STATE = !*cx.resources.LED_STATE;
 
-        val = adc.read(pot).unwrap();
-        // hprintln!("Ok {:?}", val).unwrap();
+        val = adc.read(sig).unwrap();
+        // hprintln!(" {:?}", val).unwrap();
 
         if val >= 350 {
             *cx.resources.LED_LOCK = false;
         } else {
             *cx.resources.LED_LOCK = true;
         }
+    }
+
+    #[task(priority = 5)]
+    fn button_event(cx: button_event::Context) {
+        hprintln!("button is pressed!!").unwrap();
+    }
+
+    #[task(binds = EXTI4_15, priority = 1, resources = [Button, INT], spawn = [button_event])]
+    fn EXTI4_15(c: EXTI4_15::Context) {
+        c.spawn.button_event().unwrap();
+        c.resources.INT.clear_irq(c.resources.Button.pin_number());
+
     }
 
     // Interrupt handlers used to dispatch software tasks
