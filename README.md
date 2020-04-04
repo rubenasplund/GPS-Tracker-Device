@@ -6,7 +6,10 @@
 
 The purpose for this project is to make a GPS tracker device which tracks position and movement patterns on animlas or things. Then sends the position data through lora.
 
-  
+## Areas of expertise
+
+- Ruben will do the software
+- Simon Will do the hardware
 
 ## Dependencies
 - Install rust [https://rustup.rs/](https://rustup.rs/)
@@ -76,9 +79,15 @@ The purpose for this project is to make a GPS tracker device which tracks positi
 * Voltage range (100mV - 1750 mV)
 
 * Temperature range -40 - 125 degrees
-
   
+  
+## Needed changes on pcb layout
+
+* Add buttons on the MCU reset and also on the OLED reset, (alternatively connect them to the same reset button) 
 
 ## References
 
 * https://github.com/mcci-catena/HW-Designs/blob/master/Boards/Catena-4610/234001131b_(Catena-4610-Schematic).pdf
+
+
+
